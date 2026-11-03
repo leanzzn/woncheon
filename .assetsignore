@@ -1,0 +1,12 @@
+# 사이트에 올리지 않을 파일 (작업용·비공개·제3자 자료)
+.git
+.wrangler
+wrangler.jsonc
+.assetsignore
+.gitignore
+model/
+*.docx
+*.py
+*.ps1
+UI reference.jpeg
+ai model.jpeg

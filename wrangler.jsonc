@@ -1,0 +1,9 @@
+{
+  "name": "woncheon",
+  "compatibility_date": "2026-10-01",
+  "assets": { "directory": "." },
+  "routes": [
+    { "pattern": "woncheon.kr", "custom_domain": true },
+    { "pattern": "www.woncheon.kr", "custom_domain": true }
+  ]
+}
