@@ -1,6 +1,6 @@
 // ───── 운영 전 반드시 실제 값으로 바꿀 것 ─────
 const BANK = "OO은행 123-456-7890 (예금주 원천)";
-const CONTACT = { kakao: "", email: "" }; // 오픈채팅 링크, 문의 메일. 비어 있으면 안내 문구만 나옴
+const CONTACT = { kakao: "", email: "lhj106147@gmail.com" }; // 오픈채팅 링크, 문의 메일. 비어 있으면 안내 문구만 나옴
 // 신청 데이터를 받을 주소 (예: Formspree). 비어 있으면 방문자 브라우저 localStorage에만 저장됨 → 운영자는 못 봄
 const LEAD_ENDPOINT = "";
 // 전자상거래법 제10조: 사이트 하단에 표시해야 하는 사업자 정보
