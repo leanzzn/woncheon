@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>원천 woncheon</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <a class="logo" href="index.html">원천<span>woncheon</span></a>
+    <nav>
+      <div class="label">구독자</div>
+      <a class="on" href="index.html">에셋 탐색</a>
+      <a href="index.html#plans">구독</a>
+      <div class="label">크리에이터</div>
+      <a href="creator.html">업로드 스튜디오</a>
+      <a href="creator.html#guide">매입 가이드</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div class="crumb">원천 / <b>에셋 탐색</b></div>
+      <input type="search" id="q" placeholder="이름, 태그 검색">
+      <button class="btn" data-pay="Pro">구독하기</button>
+    </div>
+
+    <div class="head">
+      <div>
+        <h1>에셋 탐색</h1>
+        <p class="muted">검수를 통과해 원천이 직접 매입한 캐릭터 4K 이미지 팩입니다. 지금은 모든 에셋을 무료로 내려받을 수 있습니다. 모든 인물은 AI로 만든 가상 인물입니다.</p>
+      </div>
+    </div>
+
+    <div class="tabs" id="tabs">
+      <button class="on" data-t="">전체</button>
+      <button data-t="BASIC">LITE</button>
+      <button data-t="PRO">PRO</button>
+    </div>
+    <div class="grid" id="grid"></div>
+
+    <section id="plans">
+      <h2>구독</h2>
+      <div class="plans" id="plancards"></div>
+      <p class="muted small" style="margin-top:12px">모든 요금제는 비독점 상업적 이용 라이선스입니다. 에셋 원본을 그대로 재판매·재배포할 수는 없습니다. <a href="terms.html#license"><u>라이선스 범위</u></a></p>
+    </section>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="concierge.js"></script>
+<script>
+  document.getElementById("plancards").innerHTML = Object.entries(PLANS).map(([n, p]) => `
+    <div class="card${p.main ? " main-plan" : ""}">
+      <b>${n}</b> ${p.main ? `<span class="tag dark">추천</span>` : ""}${p.soon ? `<span class="tag">COMING SOON</span>` : ""}
+      <p class="muted small">${p.who}</p>
+      <div class="price">${p.beta ? `${won(p.beta)} <span><s>${won(p.price)}</s> / 월 · 베타 50%</span>` : `${won(p.price)} <span>/ 월</span>`}</div>
+      <ul class="plain">${p.perks.map(x => `<li>${x}</li>`).join("")}</ul>
+      <button class="btn${p.main ? "" : " ghost"}" data-pay="${n}">${p.soon ? "사전 예약" : "시작하기"}</button>
+    </div>`).join("");
+
+  const grid = document.getElementById("grid"), q = document.getElementById("q");
+  let tier = "";
+
+  function render() {
+    const s = q.value.trim().toLowerCase();
+    const list = ASSETS.filter(a =>
+      (!tier || a.tier === tier) &&
+      (!s || (a.name + " " + a.tags.join(" ")).toLowerCase().includes(s)));
+    grid.innerHTML = list.length ? list.map(a => `
+      <a class="card asset" href="asset.html?id=${a.id}">
+        <div class="thumb"><img src="${a.sheet}" alt="${a.name}"></div>
+        <div class="body">
+          <div class="row"><span class="name">${a.name}${a.sample ? ' <span class="tag dark">무료</span>' : ""}</span><span class="tag">${PLAN_OF[a.tier]}</span></div>
+          <p class="muted small">${a.profile.나이}세 · ${a.profile.키} · ${a.tags.join(", ")}</p>
+        </div>
+      </a>`).join("") : `<p class="empty">조건에 맞는 에셋이 없습니다.</p>`;
+  }
+
+  document.getElementById("tabs").onclick = e => {
+    if (e.target.tagName !== "BUTTON") return;
+    tier = e.target.dataset.t;
+    document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b === e.target));
+    render();
+  };
+  q.oninput = render;
+  render();
+</script>
+</body>
+</html>

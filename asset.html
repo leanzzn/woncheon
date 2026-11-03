@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>캐릭터 시트 · 원천</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <a class="logo" href="index.html">원천<span>woncheon</span></a>
+    <nav>
+      <div class="label">구독자</div>
+      <a class="on" href="index.html">에셋 탐색</a>
+      <a href="index.html#plans">구독</a>
+      <div class="label">크리에이터</div>
+      <a href="creator.html">업로드 스튜디오</a>
+      <a href="creator.html#guide">매입 가이드</a>
+    </nav>
+  </aside>
+
+  <main class="main" id="main"></main>
+</div>
+
+<script src="data.js"></script>
+<script src="concierge.js"></script>
+<script>
+  const a = ASSETS.find(x => x.id === new URLSearchParams(location.search).get("id"));
+  const main = document.getElementById("main");
+
+  if (!a) {
+    main.innerHTML = `<div class="top"><div class="crumb"><a href="index.html">에셋 탐색</a> / <b>없음</b></div></div>
+      <p class="empty">에셋을 찾을 수 없습니다. <a href="index.html"><u>목록으로</u></a></p>`;
+  } else {
+    document.title = a.name + " · 원천";
+    const rows = Object.entries(a.profile).map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("");
+    main.innerHTML = `
+      <div class="top">
+        <div class="crumb"><a href="index.html">에셋 탐색</a> / <b>${a.name}</b></div>
+      </div>
+      <div class="head">
+        <div>
+          <h1>${a.name} <span class="tag">${PLAN_OF[a.tier]}</span> <span class="tag">AI 생성 가상 인물</span></h1>
+          <p class="muted">${a.tags.join(" · ")} · 등록 ${a.added}</p>
+        </div>
+        ${a.sample
+          ? `<a class="btn" href="${a.sample}" download onclick="saveLead('sample_download', { asset: '${a.id}' })">무료 다운로드 (.ZIP, ${countFor(a.tier)}장)</a>`
+          : `<button class="btn" data-pay="Pro" data-asset="${a.id}">에셋 다운로드</button>`}
+      </div>
+
+      <div class="split">
+        <div class="card">
+          ${a.gallery ? `
+          <div class="tabs" id="gtabs">
+            <button class="on" data-g="">전체 ${countFor(a.tier)}</button>
+            ${slotsFor(a.tier).map(g => `<button data-g="${g.id}">${g.ko}</button>`).join("")}
+          </div>
+          <div class="sections">
+            ${slotsFor(a.tier).map(g => `
+              <figure data-g="${g.id}"><img src="${a.gallery}${g.id}.jpg" alt="${a.name} ${g.ko}" loading="lazy"><figcaption>${g.ko}</figcaption></figure>`).join("")}
+          </div>` : `<img src="${a.sheet}" alt="${a.name} 캐릭터 시트" style="width:100%;display:block">`}
+        </div>
+
+        <div class="stack">
+          <div class="card">
+            <h2>프로필</h2>
+            <table>${rows}</table>
+          </div>
+
+          <div class="card">
+            <h2>이미지 팩 구성 (.zip)</h2>
+            <table>
+              <tr><th>profile.json</th><td>텍스트 캐릭터 프로필</td></tr>
+              ${slotsFor(a.tier).map(g => `<tr><th>${g.id}.png</th><td>${g.ko}</td></tr>`).join("")}
+            </table>
+            <p class="muted small" style="margin-top:8px">구역별 4K PNG 파일입니다. ${a.tier === "BASIC" ? "디테일·헤어/얼굴 분석은 PRO 팩에만 들어 있습니다." : ""}</p>
+          </div>
+
+          <p class="muted small">${a.sample
+            ? "무료 팩에는 구역별 PNG와 원본 캐릭터 시트가 들어 있으며 비상업적 용도로 쓸 수 있습니다. 상업적 이용은 구독이 필요합니다."
+            : "4K 원본은 구독 후 다운로드할 수 있습니다."}</p>
+          <p class="muted small">생성형 AI로 만든 가상 인물입니다. 크리에이터가 상업적 이용이 허용된 베이스 모델 사용과 실존 인물 미사용을 보증했고, 원천이 검수 후 매입했습니다. 구독자에게는 <a href="terms.html#license"><u>비독점 상업적 이용 라이선스</u></a>가 부여됩니다.</p>
+        </div>
+      </div>`;
+
+    document.getElementById("gtabs")?.addEventListener("click", e => {
+      const g = e.target.dataset.g;
+      if (g === undefined) return;
+      document.querySelectorAll("#gtabs button").forEach(b => b.classList.toggle("on", b === e.target));
+      document.querySelectorAll(".sections figure").forEach(f => f.hidden = g && f.dataset.g !== g);
+    });
+  }
+</script>
+</body>
+</html>
